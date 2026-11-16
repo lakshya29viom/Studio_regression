@@ -1,9 +1,6 @@
-@assertions
 Feature: assertions
 
-#Run everything with @assertions, only the passing steps with @assertions_1, or one problem at a time with @check_1 ... @check_6.
-
-@assertions_1
+@assertions
 Scenario: assertions that passed
 #check that "<string>" is a (file|directory)[ and continue]
   And check that "/etc/hosts" is a file
@@ -236,7 +233,7 @@ Scenario: assertions that passed
   And check that screen contains "Welcome to the-internet"
 
 @check_1
-Scenario: check that checkbox with text next to the box and no label element (warning)
+Scenario: check that checkbox with text next to the box and no label element 
 #the text "checkbox 1" is plain text next to the box, not a <label>. "checkbox 2" is checked on the page but the step reports it as not checked (warning).
   And click on the element with class "home-link"
   And wait 2 secs
@@ -252,7 +249,7 @@ Scenario: check that checkbox with text next to the box and no label element (wa
   And check that screen contains "Welcome to the-internet"
 
 @check_2
-Scenario: check that variable contains either of the following (error)
+Scenario: check that variable contains either of the following 
 #check that variable <string> contains either of the following [ with exact phrase] [ and continue]
 #the first step throws UnsupportedOperationException (AssertSteps line 657), so the other three are skipped and have not been tested
   And click on the element with class "home-link"
@@ -296,7 +293,7 @@ Scenario: check that screen contains or does not contain following with and save
   And check that screen contains "Welcome to the-internet"
 
 @check_4
-Scenario: check that text appears a number of times on screen (error)
+Scenario: check that text appears a number of times on screen 
 #"Favorite color" and "Favorite sport" are both on the page, but the step counts "Favorite" 1 time, not 2
   And click on the element with class "home-link"
   And wait 2 secs
@@ -306,8 +303,7 @@ Scenario: check that text appears a number of times on screen (error)
   And check that "Favorite" appears 2 times on screen
 
 @check_5
-Scenario: check color with exact phrase on the error message (error)
-#the message element also holds the close mark, so with exact phrase the element is "not visible". The same check without exact phrase passes in assertions_1.
+Scenario: check color with exact phrase on the error message 
   And click on the element with class "home-link"
   And wait 2 secs
   And click "Form Authentication" with exact phrase
@@ -319,7 +315,7 @@ Scenario: check color with exact phrase on the error message (error)
   And check that "Your username is invalid!" background color is "red" with exact phrase
 
 @check_6
-Scenario: check that text appears 1 time with exact phrase and save it as (error)
+Scenario: check that text appears 1 time with exact phrase and save it as
 #"Red" is on the page (radio label) but with exact phrase the count is 0
   And click on the element with class "home-link"
   And wait 2 secs
@@ -328,3 +324,25 @@ Scenario: check that text appears 1 time with exact phrase and save it as (error
   And check that screen contains "Favorite color"
   And check that "Red" appears 1 time on screen with exact phrase and save it as "redCount"
   And print value of "redCount"
+
+@check_7
+Scenario: check that API response contains a substring on a 404 response
+  And compose a get request to "https://dummyjson.com/products/0" with headers
+    | Accept | application/json |
+  And execute and save the response as "missingResponse1"
+  And print value of "missingResponse1"
+  And check that response {missingResponse1} has "404" as status code
+  And check that API response {missingResponse1} contains "Product with id '0' not found" at "$.message"
+  And check that API response {missingResponse1} contains "not found" at "$.message"
+  And check that response {missingResponse1} has "404" as status code
+
+@check_8
+Scenario: check that API response contains a substring or a wrong value on a 200 response 
+  And compose a get request to "https://dummyjson.com/users/1" with headers
+    | Accept | application/json |
+  And execute and save the response as "userResponseControl"
+  And check that response {userResponseControl} has "200" as status code
+  And check that API response {userResponseControl} contains "emilys" at "$.username"
+  And check that API response {userResponseControl} contains "emil" at "$.username"
+  And check that API response {userResponseControl} contains "wrongname" at "$.username"
+  And check that response {userResponseControl} has "200" as status code
