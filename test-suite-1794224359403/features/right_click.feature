@@ -340,6 +340,20 @@ Scenario: right click
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 @right_click_1
 Scenario: right click on the element to the above of "<string>" with exact phrase
